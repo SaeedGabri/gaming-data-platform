@@ -1,0 +1,27 @@
+name: gaming_data_platform
+version: "1.0.0"
+config-version: 2
+
+profile: gaming_data_platform
+
+model-paths:
+  - models
+
+clean-targets:
+  - target
+  - dbt_packages
+
+models:
+  gaming_data_platform:
+
+    staging:
+      +materialized: view
+      +schema: gaming_silver
+
+    intermediate:
+      +materialized: view
+      +schema: gaming_silver
+
+    marts:
+      +materialized: table
+      +schema: gaming_gold

@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: stg_payment_transactions
+    description: Cleaned, standardized, and deduplicated payment transactions.
+
+    columns:
+      - name: transaction_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: player_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: source('gaming_bronze', 'players')
+                field: player_id
+
+      - name: transaction_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['DEPOSIT', 'WITHDRAWAL']
+
+      - name: transaction_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['SUCCESS', 'FAILED', 'PENDING', 'REVERSED']
+
+      - name: amount
+        data_tests:
+          - not_null

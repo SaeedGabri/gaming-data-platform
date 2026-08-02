@@ -1,0 +1,15 @@
+{
+  "project_name": "gaming-data-platform",
+  "environment": "local",
+  "source_systems": {
+    "players": "PLAYER_SERVICE",
+    "games": "GAME_CATALOGUE",
+    "payments": "PAYMENT_SERVICE"
+  },
+  "default_currency": "USD",
+  "batch_size": {
+    "players": 1000,
+    "games": 100,
+    "payments": 5000
+  }
+}

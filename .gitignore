@@ -1,0 +1,87 @@
+# =========================================================
+# Python
+# =========================================================
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# =========================================================
+# Environment variables and credentials
+# =========================================================
+.env
+.env.*
+!.env.example
+
+*.pem
+*.key
+*.p12
+*.pfx
+
+credentials*.json
+application_default_credentials.json
+service-account*.json
+service_account*.json
+profiles.yml
+profiles.yaml
+
+# =========================================================
+# Generated and local data
+# =========================================================
+data/generated/
+data/raw/
+data/temp/
+*.tmp
+
+# =========================================================
+# dbt runtime artifacts
+# =========================================================
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/packages/
+
+# =========================================================
+# Airflow runtime files
+# =========================================================
+airflow/logs/
+airflow/airflow.cfg
+airflow/standalone_admin_password.txt
+airflow/dags/__pycache__/
+airflow/plugins/__pycache__/
+
+# =========================================================
+# Terraform runtime and sensitive state
+# =========================================================
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/.terraform.tfstate.lock.info
+terraform/tfplan
+terraform/*.tfplan
+terraform/crash.log
+terraform/crash.*.log
+terraform/*.tfvars
+terraform/*.auto.tfvars
+
+# Keep the provider lock file in Git
+!terraform/.terraform.lock.hcl
+
+# =========================================================
+# Editors and operating systems
+# =========================================================
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# =========================================================
+# General logs
+# =========================================================
+*.log
+airflow/config/airflow.cfg

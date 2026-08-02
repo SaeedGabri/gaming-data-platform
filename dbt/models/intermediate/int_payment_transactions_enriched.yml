@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: int_payment_transactions_enriched
+    description: Payment transactions enriched with current player attributes.
+
+    columns:
+      - name: transaction_id
+        data_tests:
+          - not_null
+          - unique
+
+      - name: player_id
+        data_tests:
+          - not_null
+
+      - name: country_code
+        data_tests:
+          - not_null
+
+      - name: amount
+        data_tests:
+          - not_null

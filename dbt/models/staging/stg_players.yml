@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: stg_players
+    description: Cleaned and deduplicated player records.
+
+    columns:
+      - name: player_id
+        description: Unique identifier for each player.
+        data_tests:
+          - not_null
+          - unique
+
+      - name: country_code
+        description: Two-character country code.
+        data_tests:
+          - not_null
+
+      - name: account_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['ACTIVE', 'SUSPENDED', 'CLOSED', 'PENDING']
+
+      - name: vip_tier
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['STANDARD', 'SILVER', 'GOLD', 'PLATINUM']
+
+      - name: risk_category
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['LOW', 'MEDIUM', 'HIGH']

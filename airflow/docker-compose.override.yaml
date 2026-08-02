@@ -1,0 +1,13 @@
+services:
+  airflow-worker:
+    environment:
+      GOOGLE_APPLICATION_CREDENTIALS: /home/airflow/.config/gcloud/application_default_credentials.json
+      GOOGLE_CLOUD_PROJECT: gaming-data-platform-dev
+      CLOUDSDK_CORE_PROJECT: gaming-data-platform-dev
+      DBT_PROFILES_DIR: /home/airflow/.dbt
+      AIRFLOW_CONN_GOOGLE_CLOUD_DEFAULT: '{"conn_type":"google_cloud_platform","extra":{"project":"gaming-data-platform-dev"}}'
+
+    volumes:
+      - "${GCP_CONFIG_PATH}:/home/airflow/.config/gcloud:ro"
+      - "${DBT_PROJECT_PATH}:/opt/airflow/dbt"
+      - "${DBT_PROFILE_DIR}:/home/airflow/.dbt:ro"

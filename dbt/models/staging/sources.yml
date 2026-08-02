@@ -1,0 +1,13 @@
+﻿version: 2
+
+sources:
+  - name: gaming_bronze
+    database: gaming-data-platform-dev
+    schema: gaming_bronze
+
+    tables:
+      - name: payment_transactions
+        description: Raw payment transactions loaded from GCS.
+
+      - name: players
+        description: Raw player records loaded from GCS.
