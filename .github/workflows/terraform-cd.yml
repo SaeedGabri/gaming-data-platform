@@ -1,0 +1,94 @@
+name: Terraform CD
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/**"
+      - ".github/workflows/terraform-cd.yml"
+
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Terraform operation to perform"
+        required: true
+        default: "plan"
+        type: choice
+        options:
+          - plan
+          - apply
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: terraform-gaming-dev
+  cancel-in-progress: false
+
+env:
+  TF_IN_AUTOMATION: "true"
+  TF_INPUT: "false"
+
+  GCP_PROJECT_ID: "gaming-data-platform-dev"
+
+  WORKLOAD_IDENTITY_PROVIDER: >-
+    projects/22500090872/locations/global/workloadIdentityPools/github-actions/providers/gaming-data-platform
+
+  TERRAFORM_SERVICE_ACCOUNT: >-
+    github-terraform-deployer@gaming-data-platform-dev.iam.gserviceaccount.com
+
+jobs:
+  terraform:
+    name: Terraform plan and apply
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    if: github.ref == 'refs/heads/main'
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ env.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ env.TERRAFORM_SERVICE_ACCOUNT }}
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          create_credentials_file: true
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.15.8"
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive -diff
+
+      - name: Initialize Terraform
+        run: terraform init -input=false
+
+      - name: Validate Terraform
+        run: terraform validate
+
+      - name: Create Terraform plan
+        run: |
+          terraform plan \
+            -input=false \
+            -lock-timeout=5m \
+            -out=tfplan
+
+      - name: Apply Terraform plan
+        if: github.event_name == 'workflow_dispatch' && inputs.action == 'apply'
+        run: |
+          terraform apply \
+            -input=false \
+            -lock-timeout=5m \
+            -auto-approve \
+            tfplan
