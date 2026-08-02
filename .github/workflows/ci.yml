@@ -1,0 +1,99 @@
+name: Gaming Data Platform CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  python-validation:
+    name: Python syntax validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - name: Compile Python files
+        run: |
+          python -m compileall -q ingestion airflow/dags
+
+
+  dbt-validation:
+    name: dbt project validation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dbt BigQuery
+        run: |
+          python -m pip install --upgrade pip
+          pip install "dbt-bigquery==1.12.0"
+
+      - name: Create CI dbt profile
+        run: |
+          mkdir -p "$HOME/.dbt"
+
+          cat > "$HOME/.dbt/profiles.yml" <<'EOF'
+          gaming_data_platform:
+            target: ci
+            outputs:
+              ci:
+                type: bigquery
+                method: oauth
+                project: gaming-data-platform-dev
+                dataset: gaming_ci
+                location: me-central1
+                threads: 1
+                priority: interactive
+          EOF
+
+      - name: Parse dbt project
+        run: |
+          dbt parse \
+            --project-dir dbt \
+            --profiles-dir "$HOME/.dbt" \
+            --no-partial-parse
+
+
+  terraform-validation:
+    name: Terraform validation
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: terraform
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: "1.15.8"
+
+      - name: Check Terraform formatting
+        run: terraform fmt -check -recursive -diff
+
+      - name: Initialize Terraform without backend
+        run: terraform init -backend=false -input=false
+
+      - name: Validate Terraform
+        run: terraform validate
