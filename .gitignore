@@ -85,3 +85,5 @@ Thumbs.db
 # =========================================================
 *.log
 airflow/config/airflow.cfg
+
+terraform-state-backup/
