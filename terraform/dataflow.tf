@@ -131,3 +131,11 @@ resource "google_bigquery_table" "payment_transactions_stream" {
     }
   ])
 }
+resource "google_project_iam_member" "dataflow_pubsub_viewer" {
+  project = "gaming-data-platform-dev"
+  role    = "roles/pubsub.viewer"
+
+  member = (
+    "serviceAccount:${google_service_account.dataflow_payment_worker.email}"
+  )
+}
